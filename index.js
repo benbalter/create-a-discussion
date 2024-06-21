@@ -16,6 +16,11 @@ const main = async () => {
   const categoryName = core.getInput("category") || "General"
   const category = repository.discussionCategories.nodes.find(c => c.name === categoryName)
 
+  if (category === undefined) {
+    core.setFailed(`Could not find category ${categoryName}`)
+    return
+  }
+
   await createDiscussion(authToken, finalDiscussionBody, discussionTitle, repository.id, category.id)
 }
 
@@ -28,7 +33,7 @@ const getRepositoryData = async (authToken) => {
       query repositoryId($owner: String!, $name: String!) {
         repository(owner: $owner, name: $name) {
           id
-          discussionCategories(first: 10) {
+          discussionCategories(first: 100) {
             nodes {
               id
               name
